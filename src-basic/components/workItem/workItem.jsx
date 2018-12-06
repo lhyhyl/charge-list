@@ -1,9 +1,4 @@
 import React,{Component} from 'react'
-import {connect} from 'react-redux'
-import {
-    delSuccess,
-    updateSuccess
-} from '../../redux/actions'
 import PropTypes from 'prop-types'
 import {
     Checkbox,
@@ -11,7 +6,7 @@ import {
     Modal,
     Tag
 } from 'antd';
- class WorkList extends Component{
+export default class WorkList extends Component{
     style = {
         position:'absolute',
         right:'10px' ,
@@ -20,7 +15,9 @@ import {
     static propTypes = {
         work:PropTypes.object.isRequired,
         index:  PropTypes.number.isRequired,
-
+        isFinished:PropTypes.bool.isRequired,
+        del:PropTypes.func.isRequired,
+        update:PropTypes.func.isRequired
     }
     state = {
         isDel:false
@@ -33,7 +30,7 @@ import {
 
     updateWork = () =>{
         const {index} = this.props
-        this.props.updateSuccess(index)
+        this.props.update(index)
     }
 
 
@@ -44,7 +41,7 @@ import {
         confirm({
             title: `确定删除“${this.props.work.workName}”任务吗？`,
             onOk() {
-                that.props.delSuccess(index)
+                that.props.del(index)
             },
             onCancel() {
 
@@ -52,19 +49,18 @@ import {
         });
     }
     render(){
-        const {work} = this.props
-        const {checked,isfinished,workName,date} = work
+        const {work,isFinished} = this.props
         return (
             <div>
                 <li className="list-group-item " style={{paddingBottom:'25px'}} >
                     <div style={{position:'relative'}}>
-                        <Tag color="#f50" style={{height:'25px'}}>{workName}</Tag>&nbsp;&nbsp;&nbsp;&nbsp;
-                        <span style={{position:'absolute',left:'30px',top:'25px',fontSize:'12px'}}>完成时间<span style={{color:'blue'}}>{date}</span></span>
+                        <Tag color="#f50" style={{height:'25px'}}>{work.workName}</Tag>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <span style={{position:'absolute',left:'30px',top:'25px',fontSize:'12px'}}>完成时间<span style={{color:'blue'}}>{work.date}</span></span>
                     </div>
 
                     <div style={this.style}>
-                        {isfinished ? <Checkbox checked={checked} onChange={this.updateWork}>标记为未完成</Checkbox> :
-                            <Checkbox checked={checked } onChange={this.updateWork}>标记为已完成</Checkbox>}
+                        {isFinished ? <Checkbox checked={this.props.work.checked} onChange={this.updateWork}>标记为未完成</Checkbox> :
+                            <Checkbox checked={this.props.work.checked } onChange={this.updateWork}>标记为已完成</Checkbox>}
                         <Button type="primary" onClick={this.delWork}>删除</Button>
 
                     </div>
@@ -75,8 +71,3 @@ import {
         );
     }
 }
-
-export default connect(
-    state => ({project:state.project}),
-    {delSuccess,updateSuccess}
-)(WorkList)

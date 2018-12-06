@@ -1,39 +1,23 @@
 import React,{Component} from 'react'
-import {connect} from 'react-redux'
+import {Input,DatePicker,Button} from 'antd'
+import PropTypes from 'prop-types'
 import Moment from 'moment'
-import {addSuccess} from '../../redux/actions'
-import {
-    Input,
-    DatePicker,
-    Button,
-    Modal
-} from 'antd'
- class WorkAdd extends Component{
+export default class WorkAdd extends Component{
+    static propTypes = {
+        add:PropTypes.func.isRequired
+    }
     state ={
         name:'',
         date:null
     }
-
-     warning = () => {
-         Modal.warning({
-             title: '任务名不能为空！',
-             // content: 'some messages...some messages...',
-         });
-     }
     addWork = () => {
         const {name,date} = this.state
-        console.log(name)
-        const newDate = date ? Moment(date.format('YYYY-MM-DD'))._i:''
-
-        if(!this.state.name){
-            this.warning()
-            return
-        }
-        this.props.addSuccess({newName:name,newDate})
+        this.props.add(name,date ? Moment(date.format('YYYY-MM-DD'))._i:'')
         this.setState({
             name:'',
             date:null
         })
+
     }
 
     //改变任务名状态
@@ -69,7 +53,3 @@ import {
         )
     }
 }
-export default connect(
-    state => ({project:state.project}),
-    {addSuccess}
-)(WorkAdd)

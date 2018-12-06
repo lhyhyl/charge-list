@@ -1,25 +1,19 @@
 import React,{Component} from 'react'
+import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import WorkItem from '../workItem/workItem'
-export default class Completed extends Component{
+ class Completed extends Component{
 
-    static propTypes = {
-        works:PropTypes.array.isRequired,
-        del:PropTypes.func.isRequired,
-        update:PropTypes.func.isRequired
-    }
 
     render(){
-        const {works} = this.props
+        const {works} = this.props.project
         return(
             <div>
                 <h1>已完成事项</h1>
                 <ul className="list-group">
                     {
                       works.map((work,index)=>{
-                          return work.isfinished ? ( <WorkItem key={index} work={work}
-                                                               index={index} isFinished={work.isfinished}
-                                                               del={this.props.del} update={this.props.update}/>): null
+                          return work.isfinished ? ( <WorkItem key={index} work={work} index={index}/>): null
                       })
 
                     }
@@ -28,3 +22,7 @@ export default class Completed extends Component{
         )
     }
 }
+export default connect(
+    state => ({project:state.project}),
+
+)(Completed)

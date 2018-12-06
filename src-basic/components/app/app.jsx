@@ -1,12 +1,11 @@
 import React,{Component} from 'react'
-import {connect} from 'react-redux'
 import Completed from '../completed/completed'
 import Unfinished from '../unfinished/unfinished'
 import WorkAdd from '../workAdd/work-add'
 import {Divider ,Modal} from 'antd'
- class App extends Component{
+export default class App extends Component{
 
-    /*/!*state = {
+    state = {
         works:[
             {workName:'英语听力',isfinished:true,checked:true,date:'2018-04-15'},
             {workName:'打篮球',isfinished:false,checked:false,date:'2018-04-05'},
@@ -14,7 +13,7 @@ import {Divider ,Modal} from 'antd'
             {workName:'蹦极',isfinished:true,checked:true,date:'2018-08-15'},
         ],
         isShow:false
-    }*!/
+    }
 
     warning = () => {
         Modal.warning({
@@ -25,7 +24,7 @@ import {Divider ,Modal} from 'antd'
 
     //往works里面添加数据
     add = (workName,date) => {
-        const {works} = this.props.project
+        const {works} = this.state
         if(!workName){
             this.warning()
             return
@@ -36,21 +35,21 @@ import {Divider ,Modal} from 'antd'
 
     //删除works中指定数据
     del = (index) => {
-        const {works} = this.props.project
+        const {works} = this.state
         works.splice(index,1)
         this.setState({works})
     }
 
     //更新work状态
     update = (index) => {
-        const {works} = this.props.project
+        const {works} = this.state
         works[index].isfinished =  !works[index].isfinished
         works[index].checked =  !works[index].checked
         this.setState({works})
-    }*/
+    }
 
     render(){
-        const {works} = this.props.project
+        const {works} = this.state
         return(
 
             <div>
@@ -64,16 +63,13 @@ import {Divider ,Modal} from 'antd'
                    </div>
                 </header>
                 <div className="container">
-                    <WorkAdd />
+                    <WorkAdd add={this.add}/>
                     <Divider/>
-                    <Unfinished />
+                    <Unfinished works = {works} del={this.del} update={this.update}/>
                     <Divider/>
-                    <Completed />
+                    <Completed works = {works} del={this.del} update={this.update}/>
                 </div>
             </div>
         )
     }
 }
-export default connect(
-    state =>({project:state.project})
-)(App)
