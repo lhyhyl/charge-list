@@ -3,41 +3,46 @@ import {connect} from 'react-redux'
 import Moment from 'moment'
 import {addSuccess} from '../../redux/actions'
 import {
+    Form,
     Input,
     DatePicker,
     Button,
-    Modal
 } from 'antd'
  class WorkAdd extends Component{
     state ={
         name:'',
         date:null
     }
+     handleSubmit = (e) => {
+         e.preventDefault();
+         this.props.form.validateFields((err, values) => {
+             if (!err) {
+                 console.log('Received values of form: ', values);
+             }
 
-     warning = () => {
-         Modal.warning({
-             title: '任务名不能为空！',
-             // content: 'some messages...some messages...',
          });
+         this.addWork();
+
+     }
+     handleReset = () => {
+         this.props.form.resetFields();
      }
     addWork = () => {
         const {name,date} = this.state
-        console.log(name)
-        const newDate = date ? Moment(date.format('YYYY-MM-DD'))._i:''
-
-        if(!this.state.name){
-            this.warning()
+        if(!name || !date){
             return
         }
+        const newDate = date ? Moment(date.format('YYYY-MM-DD'))._i:''
         this.props.addSuccess({newName:name,newDate})
-        this.setState({
+       /* this.setState({
             name:'',
             date:null
-        })
+        })*/
     }
 
     //改变任务名状态
     handleNameChange = (event) =>{
+        console.log(event.target.value)
         const name = event.target.value
         this.setState({name})
     }
@@ -47,29 +52,59 @@ import {
         this.setState({date})
     }
     render(){
-        const InputGroup = Input.Group;
-
+        const FormItem = Form.Item;
+        const { getFieldDecorator } = this.props.form;
         return(
             <div className="row">
-
-                    <InputGroup compact style={{ textAlign:'center' }}>
-                        <Input  size="large"  onChange={this.handleNameChange}
-                                style={{ width: '50%' }}
-                                placeholder="请输入待办事项"
-                                value={this.state.name}/>
-                        <DatePicker  style={{ width: '33%' }} size="large"
-                                     placeholder="选择完成日期"
-                                     onChange={this.handleDateChange}
-                                     value={this.state.date}
+                <Form onSubmit={this.handleSubmit} layout="inline" style={{textAlign:'center'}}>
+                    <FormItem
+                        label="待办事项"
+                        labelCol={{ span: 6 }}
+                        wrapperCol={{ span: 18 }}
+                    >
+                        {getFieldDecorator('note', {
+                            initialValue:this.state.name,
+                            rules: [{ required: true, message: '任务名不能为空!'  }],
+                        })(
+                            <Input  size="large"  onChange={this.handleNameChange}
+                                    style={{ width: '100%' }}
+                                    placeholder="请输入待办事项"
                                     />
-                        <Button type='primary' size="large" onClick={ this.addWork}>添加</Button>
-                    </InputGroup>
+                        )}
+                    </FormItem>
+                    <FormItem
+                        label="完成时间"
+                        labelCol={{ span: 6 }}
+                        wrapperCol={{ span: 18 }}
+                    >
+                        {getFieldDecorator('gender', {
+                            initialValue:this.state.date,
+                            rules: [{ required: true, message: '完成时间不能为空!', }],
+                        })(
+                            <DatePicker  style={{ width: '100%' }} size="large"
+                                         placeholder="选择完成日期"
+                                         onChange={this.handleDateChange}
+                            />
+                        )}
+
+                    </FormItem>
+                    <FormItem
+                        wrapperCol={{ span: 12, offset: 5 }}
+                    >
+                        <Button type="primary" htmlType="submit" >
+                            添加
+                        </Button>
+
+                    </FormItem>
+                </Form>
+
 
             </div>
         )
     }
 }
+const WrappedApp = Form.create()(WorkAdd);
 export default connect(
     state => ({project:state.project}),
     {addSuccess}
-)(WorkAdd)
+)(WrappedApp)

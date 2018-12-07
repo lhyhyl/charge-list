@@ -1,6 +1,5 @@
 import React,{Component} from 'react'
 import {connect} from 'react-redux'
-import PropTypes from 'prop-types'
 import WorkItem from '../workItem/workItem'
  class Completed extends Component{
 
